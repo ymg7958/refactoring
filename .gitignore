@@ -1,1 +1,2 @@
-test.js
+*.js
+.DS_Store

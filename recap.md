@@ -22,9 +22,9 @@
 [7-9 Substitute Algorithm](#7-9-substitute-algorithm)   
 [8-5 Replace Inline Code with Function Call](#8-5-replace-inline-code-with-function-call)    
 [8-6 Slide Statements](#8-6-slide-statements)   
- [8-7 Split Loop](#8-7-split-loop)   
- [8-8 Replace Loop with Pipeline](#8-8-replace-loop-with-pipeline)   
- [8-9 Remove Dead Code](#8-9-remove-dead-code)   
+[8-7 Split Loop](#8-7-split-loop)   
+[8-8 Replace Loop with Pipeline](#8-8-replace-loop-with-pipeline)   
+[8-9 Remove Dead Code](#8-9-remove-dead-code)   
 [기타](#btz)
 
 
