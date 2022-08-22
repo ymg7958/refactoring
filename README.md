@@ -604,15 +604,31 @@ chargeOrder(charge);
 단 이러한 변수에는 한 번만 대입해야 한다. 만약 2번 이상 이뤄진다면 여러가지 역할을 한다는 의미   `역할을 둘 이상인 변수가 있다면 split 해야 한다.` No buts about it   
 하나의 변수 === 하나의 역할
 
-> For example
+> For example    
+
 ![example](./images/split_variable_sample.png)
 
 위 예시 함수에서 변수 `acc` 변수에 값이 두 번 대입된다는 점(=역할이 2개라는 의미)   
+> 적용 방법
  * 첫 단계로 새로운 이름으로 변수를 선언. (acc -> primaryAcceleration )
  * `const` 불변으로 선언 ( let acc -> const primaryAcceleration)
  * 모든 참조된 변수를 새로운 이름으로 변경 
  * 두 번째로 대입하는 변수를 새로 선언 (acc -> const secondaryprimaryvelocity)
+ > 적용된 코드
 
+```js
+전) let acc = scenario.primaryForce / scenario.mass;
+후) const primaryAcceleration = scenario.primaryForce / scenario.mass;
+
+전) result = 0.5 * acc * primaryTime * primaryTime;
+후) result = 0.5 * primaryAcceleration * primaryTime * primaryTime;
+
+전) let primaryVelocity = acc * scenario.delay; 
+후) let primaryVelocity = primaryAcceleration * scenario.delay;
+ 
+전) acc = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass;
+후) const secondaryAcceleration = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass;
+```
 ---
 
 ## 9-2 Rename Filed
