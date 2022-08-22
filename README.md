@@ -201,18 +201,18 @@ printOwing(invoice);
 ----
 ## 6-2 Inline function
 ![inline](./images/Inline_function.jpeg)
-  가독성을 위해 변수, 함수의 이름을 명확하게 작성하는 것 뿐만아니라, 코드 본문도 이름만큼 명확해야 한다.
-  특히 본문에서 참조가 많이 되는 경우 불필요한 참조를 최소하 하는 것이 좋다.  
+  * 가독성을 위해 변수, 함수의 이름을 명확하게 작성하는 것 뿐만아니라, 코드 본문도 이름만큼 명확해야 한다.
+  * 본문에서 참조가 많이 되는 경우 불필요한 참조를 최소하 하는 것이 좋다.  
 
 ---
 ## 6-3 Extract Variable
-  ![extract](./images/extract_variable.jpeg)
-    * 일부 표현식은 매우 복잡하고 읽기 어려움. 이를 지역변수로 관리
-    * 함수 내애서만 의미가 있다면 변수 추출할 것
+![extract](./images/extract_variable.jpeg)
+* 일부 표현식은 매우 복잡하고 읽기 어려움. 이를 지역변수로 관리
+* 함수 내애서만 의미가 있다면 변수 추출할 것
 
 ----
 ## 6-4 Inline Variable
-  ![inline](./images/inline_variable.jpeg)
+![inline](./images/inline_variable.jpeg)
 
 ---
 ## 6-5 Change Function Declaration
@@ -223,19 +223,15 @@ printOwing(invoice);
 * 변수와 메서드를를 캡슐화하여 액세스할 수 잇는 위치를 제한하고 구조를 명시적으로 만든다.
 * 더 많은 위치에서 데이터에 액세스할 수 있는 경우 속성을 유지 관리하기가 더 어려워진다.
 
-  ![capsule](./images/Encapsulate_variable.jpeg)
+ ![capsule](./images/Encapsulate_variable.jpeg)
 
 
-데이터를 조작하는 일은 함수와 달리 곤란하다.
-데이터를 변수로 만들어서 조작하지 말고 함수를 만들어서 호출하자
+* 데이터를 조작하는 일은 함수와 달리 곤란하다.
+* 데이터를 변수로 만들어서 조작하지 말고 함수를 만들어서 호출하자
 1. 데이터를 접근하고 수정하는 함수 생성
 2. 데이터와 함수의 스코프 체크
 3. 변수 접근 범위 제한
-위와 같은 방법으로 하면 데이터를 통째로 변경할 때 쓸 수 있다.
-그런데 데이터를 부분적으로 변경하며 조작해야 할 때는 어떻게 해야 할까
-
-
-[참고 site](https://www.educba.com/encapsulation-in-javascript/)
+* 위와 같은 방법으로 하면 데이터를 통째로 변경할 때 쓸 수 있다.
 
 
 ```js
@@ -263,20 +259,13 @@ employee.setName(42);
 employee.name = 42;
 console.log(employee.getName());
 ```
+[참고 site](https://www.educba.com/encapsulation-in-javascript/)
+
 ----
 ## 6-7 Rename Variable
   > underscore(_): 필드 앞에 underscore을 붙여서 외부에서 접근할 수 없는 숨겨진 필드임을 나타내는 방식(컨벤션)
   > We’ve prepended an underscore to indicate functions and variables that shouldn’t be accessed directly
   > 이 규칙으로 인해 개발자는 변경사항이 간주되지 않거나 테스트가 필요하지 않다고 잘못 생각하게 될 수 있다.
-
- #### ❗ Renaming a Constant
-   만약 상수를 리네이밍한다면 캡슐화를 피할 수 있고 일반적으로 복사해서 리네임할 수 있다.
-   최초 선언은 아래와 같이
-   > const cpyNm = "Acme Gooseberries"
-   카피함으로써 리네임을 시작할 수 있다.
-   const compnayName = "Acme Gooseberries";
-   const cpyNm = companyName;
-   사본을 사용하여 차례로 예전이름에서 새로운 이름으로 참조를 변경할 수 있다.
 
 ----
 
@@ -487,7 +476,7 @@ class Price {
 
 ## 8-5 Replace Inline Code with Function Call
 
- * if/else와 같이 `배열에 특정 문자열이 포함여부를 확인`할 경우 `includes` 내장함수를 이용하는게 좋다.
+ * if문과 같이 `배열에 특정 문자열이 포함여부를 확인`할 경우 `includes` 내장함수를 이용하는게 좋다.
   > `indexOf()` 메서드는 배열에서 지정된 요소를 찾을 수 있는 첫번째 인덱스를 반환하고(중복인경우) 존재하지 않으면 -1을 반환. 만약에 indexOf을 이용하여 return 값이 true/false 인경우 문제는 index가 `0`이 될 수 있으며 `false`로 평가된다. 즉 존재는 `true`이지만 검사간에 `false`로 평가된다.
 
 >For Example
@@ -578,16 +567,17 @@ chargeOrder(charge);
   > 지루한 작업처럼 보일 수 있지만, 이를 간과해서는 안된다. 모든 세부 정보를 선언/추적할 필요 없이 코드에 집중할 수 있다.
   > 리팩토링할 많은 코드를 직면하면 Slide Statements을 시작해라. 새로운 통찰력을 얻는데 도움이 된다.
 
-
-----
 > 출처: 
 [The Most undervalued Refactoring: Slide Statements](https://improveandrepeat.com/2019/09/the-most-undervalued-refactoring-slide-statements/)
 
 
-
-<!-- 주현님: 명령-질의 분리 원칙 : 함수는 그 성격에 따라 2가지 분류
+<!-- 
+주현님: 명령-질의 분리 원칙 : 함수는 그 성격에 따라 2가지 분류
 동작을 수행하는 명령, 답을 구하는 쿼리로 구분 
-함수내에서는 상태를 변경하는 코드는 불필요하다 예를들어 .toLowerCase()등을 함수내에 적용하는 행위 등 (데이터 상태를 바꾸는 일) -->
+함수내에서는 상태를 변경하는 코드는 불필요하다 예를들어 .toLowerCase()등을 함수내에 적용하는 행위 등 (데이터 상태를 바꾸는 일) 
+-->
+
+---
 
 ## 8-7 Split Loop
 ---
@@ -599,7 +589,7 @@ chargeOrder(charge);
 
 # Chapter 9 Organizing Data
 ## 9-1 Split Variable
-![split](./images/split_variable.jpeg)
+![split](./images/split_variable.jpeg)     
 긴 코드의 결과를 저장하기 했다가 가독성 또는 쉽게 참조하려는 목적으로 흔히들 변수에 값을 저장한다.    
 단 이러한 변수에는 한 번만 대입해야 한다. 만약 2번 이상 이뤄진다면 여러가지 역할을 한다는 의미   `역할을 둘 이상인 변수가 있다면 split 해야 한다.` No buts about it   
 하나의 변수 === 하나의 역할
