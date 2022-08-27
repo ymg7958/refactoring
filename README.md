@@ -589,9 +589,11 @@ chargeOrder(charge);
 
 # Chapter 9 Organizing Data
 ## 9-1 Split Variable
+ ### 2가지 역할의 변수
 ![split](./images/split_variable.jpeg)     
-긴 코드의 결과를 저장하기 했다가 가독성 또는 쉽게 참조하려는 목적으로 흔히들 변수에 값을 저장한다.    
-단 이러한 변수에는 한 번만 대입해야 한다. 만약 2번 이상 이뤄진다면 여러가지 역할을 한다는 의미   `역할을 둘 이상인 변수가 있다면 split 해야 한다.` No buts about it   
+긴 코드의 결과를 저장하기 했다가 가독성 또는 쉽게 참조하려는 목적으로 흔히들 변수에 값을 저장한다.
+단 이러한 변수에는 한 번만 대입해야 한다. 만약 2번 이상 이뤄진다면 여러가지 역할을 한다는 의미     
+`역할을 둘 이상인 변수가 있다면 split 해야 한다.` No buts about it   
 하나의 변수 === 하나의 역할
 
 > For example    
@@ -604,6 +606,7 @@ chargeOrder(charge);
  * `const` 불변으로 선언 ( let acc -> const primaryAcceleration)
  * 모든 참조된 변수를 새로운 이름으로 변경 
  * 두 번째로 대입하는 변수를 새로 선언 (acc -> const secondaryprimaryvelocity)
+ 
  > 적용된 코드
 
 ```js
@@ -619,7 +622,56 @@ chargeOrder(charge);
 전) acc = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass;
 후) const secondaryAcceleration = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass;
 ```
----
+
+### assigning a input parameters
+
+😞 Before 
+```js
+function discount(inputValue, quantity) {
+  if (inputValue > 50) inputValue = inputValue - 2;
+  if (inputValue > 100) inputValue = inputValue - 1;
+  return inputValue; 
+  }
+```
+* inputValue 변수의 역할 : 함수에 `데이터를 전달`하는 매개변수이자 `결과를 반환`하는 역할
+ 1) inputVal은 실행이 마지막 줄에 도달할 때까지 input value가 더 이상 Original Value을 포함하지 않기 때문에 오해의 소지가 있습니다.
+ 2) 만약 original input value를 다른 공간에서 사용하기 위해 수정해야 한다면
+아마도 input value를 사용할 것이고 그것은 input value으로 포함되어 있다고 가정할 것이다. 하지만 실제는 그렇지 않다.
+
+* JS의 기본유형(원시데이터)는 `call-by-value` 방식으로 전달되므로, inputValue를 수정해도 호출자에 영향을 주지 않는다.   
+* 이것이 의미하는 바는 함수 내부에 생성된 새로운 변수가 인수를 절달하는데 사용되는 변수와 완전히 분리되어 있고
+값이 함수에 들어간 후에 무슨일이 일어나더라도 함수 외부의 변수는 변경되지 않는다는 것.
+
+> Example
+
+```js
+function logger(arg) { return arg; }
+
+let fruit = "apple";
+const printLogger = logger(fruit)
+console.log(printLogger)  // apple
+fruit = "peach"
+console.log(printLogger)  // apple
+```
+
+😃 After 
+```js
+function discount (inputValue, quantity) {
+  let result = inputValue;
+  if (inputValue > 50) result = result - 2;
+  if (quantity > 100) result = result - 1;
+  return result;
+}
+```
+함수를 사용하면 잘못된 값을 반환할 위험이 있다. 일반적으로 함수에 여러 가능한 경로가 있고 경로 중 하나가 반환 값을 설정하지 않을 때 발생한다.    
+위험을 줄이기 위해서는 Check all possible return paths.
+함수 시작 부분의 반환 값을 기본값으로 초기화하는 것이 좋다.
+
+매개변수를 작업 변수로 사용하지 말고, 새로운 지역 변수 선언하여 사용
+새 변수 result 도입하면 inputVal의 역할이 명확해지고 inputVal 잘못 사용할 가능성이 제거된다.
+
+
+
 
 ## 9-2 Rename Filed
 ![rename](./images/rename_filed.jpeg)
@@ -636,11 +688,22 @@ chargeOrder(charge);
 
 ---
 
-
 ## 9-5 Change Value to Reference
 ![changevalue](./images/change_value_to_reference.jpeg)
 
 ---
+
+## 9-6 Replace Magic Literal
+* Magic Literal이란, 예로 표준중력을 뜻하는 9.80665라는 숫자를 의미를 모른다면 숫자 자체로는 의미를 명확히 알려주지 못하므로 이것을 매직 리터럴이라 할 수 있다. 만약 알고 있다고 하더라도 코드 자체가 뜻을 명확히 드러내는 게 좋다.
+* 상수를 정의하고 숫자 대신 상수를 사용하도록 바꾼다.
+
+* 그 외에도 `1월 1일`, `M`, `서울` 새로운 해의 시작을, 남성을, 본사를 뜻할 수도 있다.
+* 해당 값이 쓰이는 곳에 상수로 바꿔주면 된다. 만약 그 상수가 비교 로직에 주로 쓰이는 경우에는
+  * aValue === "M"을 aValue === MALE_GENDER로 바꾸기 보다는 isMale(aValue) 함수 호출로 바꾸는 쪽을 선호한다.
+* 상수 사용시 의미전달면에서 유용한지?(값을 바로 쓰는 것보다 나을게 없다.) 함수에서 반복적으로 쓰이는지?(단지 한번만 쓰이는지) 맥락정보를 충분히 제공하고 헷갈릴이 없다면 굳히 상수로 변경할 필요 없다.
+
+
+
 
 # btz
 
@@ -680,7 +743,7 @@ The recommended practice is to put the declaration as close as possible to the f
 From Steve McConnell's "Code Complete" book:
  > Ideally, declare and define each variable close to where it’s first used. A declaration establishes a variable’s type. A definition assigns the variable a specific value. In languages that support it, such as C++ and Java, variables should be declared and defined close to where they are first used. Ideally, each variable should be defined at the same time it’s declared.
 
-### 변수에 대한 참조 지역화  ( Localize References to variables ).
+### 변수에 대한 참조 지역화  (Localize References to variables ).
 
 참조가 가깝게 유지하면 코드를 읽는 사람이 한번에 한 섹션에 집중할 수 있다. 
 참조가 멀리 떨어져 있으면 Reader에게 프로그램에서 이동하도록 강제한다.
@@ -782,3 +845,28 @@ ES2019부터 클래스에 private field가 추가되었다.
 샵`#`을 필드 또는 메소드 명 앞에 프리픽스로 붙여주면 된다.
 
 ----
+```js
+let fruit = "raspberry";
+const logFruit = getLogger(fruit);
+logFruit();   // raspberry
+fruit = "peach";
+logFruit();   // raspberry
+```
+// ------ vs ------- 
+// ------ vs ------- 
+// 위 코드조각은 함수를 변수에 선언 및 정의 후 변수에 괄호로 함수처럼 실행이 가능
+// 아래 코드조각은 함수를 변수에 선언 및 정의 후 변수에 괄호로 함수처럼 실행이 불가
+// ------ vs ------- 
+// ------ vs ------- 
+
+```js
+function getLogger(arg) {
+  return console.log(arg);
+}
+
+let fruit = "rspberry";
+const logFruit = getLogger(fruit);
+logFruit();
+fruit = "peach";
+logFruit();
+```
