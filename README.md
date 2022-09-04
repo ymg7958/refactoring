@@ -1,5 +1,7 @@
+### Chapter 3. 코드에서 나는 악취
 [3-1 Mysterious Name](#3-1-mysterious-name)   
-[3-4 Long Parameter List](#3-4-long-parameter-list)   
+[3-4 Long Parameter List](#3-4-long-parameter-list) 
+### Chapter 6. 기본적인 리팩토링  
 [6-1 Extract function](#6-1-extract-function)   
 [6-2 Inline function](#6-2-inline-function)  
 [6-3 Extract Variable](#6-3-extract-variable)    
@@ -11,6 +13,7 @@
 [6-9 Combine Functions into Class](#6-9-combine-functions-into-class)   
 [6-10 Combine Functions into Transform](#6-10-combine-functions-into-transform)   
 [6-11 Split Phase](#6-11-split-phase)   
+### Chapter 7. 캡슐화
 [7-1 Encapsulate Record](#7-1-encapsulate-record)  
 [7-2 Encapsulate Collection](#7-2-encapsulate-collection)    
 [7-3 Replace Primitive with Object](#7-3-replace-primitive-with-object)  
@@ -20,11 +23,28 @@
 [7-7 Hide Delegate](#7-7-hide-delegate)   
 [7-8 Remove Middle Man](#7-8-remove-middle-man)   
 [7-9 Substitute Algorithm](#7-9-substitute-algorithm)   
+### Chapter 8. 기능 이동
 [8-5 Replace Inline Code with Function Call](#8-5-replace-inline-code-with-function-call)    
 [8-6 Slide Statements](#8-6-slide-statements)   
 [8-7 Split Loop](#8-7-split-loop)   
 [8-8 Replace Loop with Pipeline](#8-8-replace-loop-with-pipeline)   
-[8-9 Remove Dead Code](#8-9-remove-dead-code)   
+[8-9 Remove Dead Code](#8-9-remove-dead-code)  
+
+### Chapter 9. 데이터 조직화
+[9-1 Split Variable](#9-1-split-variable)    
+[9-2 Rename Filed](#9-2-rename-filed)   
+[9-3 Replace Derived Variable with Query](#9-3-replace-derived-variable-with-query)   
+[9-4 Change Reference to Value](#9-4-change-reference-to-value)   
+[9-5 Change Value to Reference](#9-5-change-value-to-reference)   
+[9-6 Replace Magic Literal](#9-6-replace-magic-literal)  
+
+### Chapter 10. 조건부 로직 간소화
+[10-1 Decompose Conditional](#10-1-decompose-conditional)   
+[10-2 Consolidate Conditional Expression](#10-2-consolidate-conditional-expression)   
+[10-3 Replace Nested Conditional with Guard Clauses](#10-3-replace-nested-conditional-with-guard-clauses)   
+[10-4 Replace Conditional with Polymorphism](#10-4-replace-conditional-with-polymorphism)   
+[10-5 Introduce Special Case](#10-5-introduce-special-case)   
+[10-6 Introduce Assertion](#10-6-introduce-assertion)   
 [기타](#btz)
 
 
@@ -701,6 +721,206 @@ function discount (inputValue, quantity) {
 * 해당 값이 쓰이는 곳에 상수로 바꿔주면 된다. 만약 그 상수가 비교 로직에 주로 쓰이는 경우에는
   * aValue === "M"을 aValue === MALE_GENDER로 바꾸기 보다는 isMale(aValue) 함수 호출로 바꾸는 쪽을 선호한다.
 * 상수 사용시 의미전달면에서 유용한지?(값을 바로 쓰는 것보다 나을게 없다.) 함수에서 반복적으로 쓰이는지?(단지 한번만 쓰이는지) 맥락정보를 충분히 제공하고 헷갈릴이 없다면 굳히 상수로 변경할 필요 없다.
+
+----
+
+## 10-1 Decompose Conditional
+ 
+조건문 분해하기 - if문의 조건식이 너무 길면은 이해하기 어려움으로 조건을 함수호출로 바꾸기
+```js
+if (!aDate.isBefore(plan.summerStart) && !Date.isAfter(plan.summerEnd)) {
+    charge = quantity * plan.summerRate
+  } else
+    chagne = qunatity * plan.regularRate * plan.regularServiceCharge;
+  ```
+```js
+if (summer()) {
+  charge = summerChange();
+} else {
+  charge = regularCharge();
+}
+3항연산자로 charge = summer() ? summerCharge() : regularCharge(); 바꿀 수 도 있다.
+function summer() { return !aDate.isBefore(plan.summerStart) && !Date.isAfter(plan.summerEnd)}
+function summerChange() { return charge = quantity * plan.summerRate }
+function regularCharge() { return chagne = qunatity * plan.regularRate * plan.regularServiceCharge; }
+```
+* 조건식과 그 조건식에 딸린 조건절을 각각 함수로 추출한다.
+* [조건문 작성 TIP 바로가기](https://www.digitalocean.com/community/posts/5-tips-to-write-better-conditionals-in-javascript)
+---
+
+
+## 10-2 Consolidate Conditional Expression
+```js
+
+> Example 
+
+function getFreshFruits(fruits) {
+  const freshOne = fruits;
+  if (freshOne.price >= 10000) {
+    console.log("이건 꼭 사야해!");
+  } else {
+    console.log("다음에 구매해");
+  }
+  if (freshOne.date !== new Date()) {
+    console.log("이건 꼭 사야해!");
+  } else {
+    console.log("다음에 구매해");
+  }
+  if (freshOne.quantity > 0) {
+    console.log("이건 꼭 사야해!");
+  } else {
+    console.log("다음에 구매해");
+  }}
+
+--------------------------------
+
+function getFreshFruits(fruits) {
+  const freshOne = fruits;
+  if (
+    freshOne.price >= 10000 ||
+    freshOne.date !== new Date() ||
+    freshOne.quantity > 0
+  ) {
+    console.log("이건 꼭 사야해!");
+  } else {
+    console.log("다음에 구매해");
+  }}
+
+--------------------------------
+// a lots of Conditional, handle to Extract 
+function getFreshFruits(fruits) {
+  const freshOne = fruits;
+  if (isStandardFruit(freshOne)) return console.log("이건 꼭 사야해!");
+
+  function isStandardFruit() {
+    return (
+      freshOne.price >= 10000 ||
+      freshOne.date !== new Date() ||
+      freshOne.quantity > 0
+    );
+  }
+}
+
+const fruits = {
+  price: 15000,
+  date: new Date(),
+  quantity: 1,
+};
+
+getFreshFruits(fruits);
+```
+
+> Example 2
+```js
+// 변경 전
+function getIDsFromLicenses(licenses) {
+  const ids = [];
+  for (let i = 0; i < licenses.length; i++) {
+    let license = licenses[i];
+    if (license.id != null) {
+      if (license.id.indexOf("c") === 0) {
+        let nID = Number(license.id.slice(1));
+        if (nID >= 1000000) {
+          ids.push({ type: "car", digits: nID });
+        } else {
+          ids.push({ type: "car_old", digits: nID });
+        }
+      } else if (license.id.indexOf("h") === 0) {
+        ids.push({
+          type: "hgv",
+          digits: Number(license.id.slice(1)),
+        });
+      } else if (license.id.indexOf("m") === 0) {
+        ids.push({
+          type: "motorcycle",
+          digits: Number(license.id.slice(1)),
+        });
+      }
+    }
+  }
+  return ids;
+}
+// 변경 후
+const licenses = [
+  { name: "Jon Smith", id: "c32948" },
+  { name: "Marsha Brown" },
+  { name: "Leah Oak", id: "h109" },
+  { name: "Jim Royle", id: "c29283928" },
+];
+
+function getIDsFromLicenses(licenses) {
+  const ids = licenses
+    .map((license) => license.id)
+    .filter(Boolean)
+    .filter((id) => id != null)
+    .map((id) => getIDFileds(id.charAt(0), Number(id.slice(1))));
+
+  return ids;
+}
+
+function getIDFileds(idType, digits) {
+  switch (idType) {
+    case "c":
+      return {
+        type: digits >= 100000 ? "car" : "car_old",
+        digits,
+      };
+    case "h":
+      return { type: "hgv", digits };
+    case "m":
+      return { type: "motorbycle", digits };
+  }
+}
+
+console.log(getIDsFromLicenses(licenses));
+```
+---
+
+## 10-3 Replace Nested Conditional with Guard Clauses
+ * 우리는 프로그래밍을 만들때 로직이 올바르게 작동하기 위한 조건들을 체크하게 된다.
+ * 사전 조건들을 체크하기 우ㅏㅎㄴ 여러 방법들이 있지만, 간단하고 보편적으로 사용되는 방법은 if..else / switch case 조건문을 통해 처리됩니다.
+ * 하지만 조건이 많은 경우에 if..else 를 사용하다보면 코드의 중첩이 많아지고 가독성이 떨어지게 된다.(유지보수 / 테스트에도 큰 걸림돌이 될 수 있다.)
+ *** 만약 if..else 문을 중첩하여 사용하게 된다면 `guard clause`로 처리하자!**
+ * 보호구문: 조건문에서 조건이 참인 경우 예외처리나 return 문을 통해 조건절에서 빠져나오는 것
+   * 특정 조건이 충족되거나 충족되지 않은 경우 논리의 흐름이 계속되지 않도록 하는 것.(조기 반환 또는 종료)
+
+  > Noam Chomsky, Gerald Weinberg의 연구에 따르면 3단계 이상의 중첩된 IF를 이해할 수 있는 사람은 거의 없으며 많은 연구자는 3-4단계 이상의 중첩을 피하도록 권장한다.
+
+> 기타 - 조건의 일부를 다시 테스트하여 중첩된 if..else를 단순화한다. 중첩이 너무 깊어지면 일부 조건을 다시 테스트하여 중첩 수준 수를 줄일 수 있다.
+```js
+if ( inputStatus == inputStatus_Success) {
+  ......
+  if (printLogic != NULL) {
+    ....
+    if (setupPage()) {
+      ........
+      if ( AllocMem()) {
+
+      }}}}
+----------------------------------------------------------------
+if ((inputStatus == inputStatus_Success) && (printLogic != NULL) && (setupPage())) {
+  ...
+  if (AllocMem()) {
+    ...
+  }}
+```
+* 감소된 중첩 수준에 대한 대가로 더 복잡한 테스트가 두렵지만, 4단계에서 2단계로 감소하면 가독성이 크게 향상되었다.
+
+---
+
+
+## 10-4 Replace Conditional with Polymorphism
+
+--
+
+## 10-5 Introduce Special Case
+
+--
+
+
+## 10-6 Introduce Assertion
+
+--
 
 
 
